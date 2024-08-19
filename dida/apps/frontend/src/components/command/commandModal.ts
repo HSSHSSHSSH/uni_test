@@ -12,6 +12,7 @@ export function useCommandModal() {
     showCommandModal.value = false
   }
 
+  // 注册快捷键
   function registerKeyboardShortcut() {
   // Command + K will show command in MacOS
   // Ctrl + K in Windows

@@ -8,7 +8,6 @@ import { useThemeStore } from '@/store'
 const route = useRoute()
 const themeStore = useThemeStore()
 const { initCommands } = useCommand()
-console.log('123')
 initCommands()
 </script>
 
