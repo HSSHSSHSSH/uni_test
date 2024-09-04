@@ -6,6 +6,7 @@ import { liveListProject, tasks } from '@/tests/fixture'
 
 describe('search tasks', () => {
   beforeEach(() => {
+    // mock a new pinia instance
     createTestingPinia({
       createSpy: vi.fn,
     })

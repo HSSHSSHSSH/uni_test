@@ -6,3 +6,9 @@ export const liveListProject: ListProject = {
   name: '生活',
   type: TasksSelectorType.listProject,
 }
+
+export const barkListProject: ListProject = {
+  id: '2',
+  name: 'bark',
+  type: TasksSelectorType.listProject,
+}

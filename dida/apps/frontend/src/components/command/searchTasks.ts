@@ -36,6 +36,7 @@ export function useSearchTasks() {
       const done = task.status === TaskStatus.COMPLETED
       // Determine the source of the task based on its completion status
       const from = done ? completeSmartProject : projectsStore.findProject(task.projectId)
+      console.log('from', done, from)
       // Return a new object with the required properties for Fuse.js
       return {
         id: task.id!, // Ensure id is not undefined

@@ -18,3 +18,22 @@ export const tasks = [
     position: 2,
   },
 ]
+
+export const barkTasks = [
+  {
+    id: '0',
+    title: '叫！',
+    content: '蛙叫你',
+    status: TaskStatus.ACTIVE,
+    projectId: '2',
+    position: 1,
+  },
+  {
+    id: '1',
+    title: '再叫！',
+    content: '蛙再叫你',
+    status: TaskStatus.COMPLETED,
+    projectId: '2',
+    position: 2,
+  },
+]
