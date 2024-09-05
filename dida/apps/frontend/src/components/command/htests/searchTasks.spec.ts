@@ -22,6 +22,7 @@ import { createTestingPinia } from '@pinia/testing'
 import { useSearchTasks } from '../searchTasks'
 import { useTasksStore, useListProjectsStore } from '@/store'
 import { barkTasks, barkListProject } from '@/tests/fixture'
+import { completeSmartProject } from '@/store/smartProjects'
 
 describe('searchTasks', () => {
   beforeEach(() => {
@@ -38,5 +39,18 @@ describe('searchTasks', () => {
     )
     const { searchTasks, filteredTasks } = useSearchTasks()
     await searchTasks('叫')
+    expect(filteredTasks.value.length).toBe(2)
+    expect(filteredTasks.value[0].item).toHaveProperty('id')
+    expect(filteredTasks.value[0].item).toHaveProperty('title')
+    expect(filteredTasks.value[0].item).toHaveProperty('desc')
+    expect(filteredTasks.value[0].item).toHaveProperty('done')
+    expect(filteredTasks.value[0].item).toHaveProperty('from')
+    expect(filteredTasks.value[0].item.done).toBe(false)
+    expect(filteredTasks.value[1].item.done).toBe(true)
+    // expect(filteredTasks.value[0].item.from).toBe(barkListProject)
+    // expect(filteredTasks.value[1].item.from).toEqual({
+    //   name: completeSmartProject.name,
+    //   type: completeSmartProject.type
+    // })
   })
 })
