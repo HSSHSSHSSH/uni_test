@@ -20,9 +20,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createTestingPinia } from '@pinia/testing'
 import { useSearchTasks } from '../searchTasks'
-import { useTasksStore, useListProjectsStore } from '@/store'
-import { barkTasks, barkListProject } from '@/tests/fixture'
-import { completeSmartProject } from '@/store/smartProjects'
+import { TasksSelectorType, useListProjectsStore, useTasksStore } from '@/store'
+import { barkListProject, barkTasks } from '@/tests/fixture'
+import { SmartProjectName } from '@/store/smartProjects'
 
 describe('searchTasks', () => {
   beforeEach(() => {
@@ -30,15 +30,27 @@ describe('searchTasks', () => {
     createTestingPinia({
       createSpy: vi.fn,
     })
-  })
-  it('should be search a task by title', async () => {
+
     // mock tasksStore 的 findAllTasksNotRemoved 方法 直接 mock 返回的数据
     const tasksStore = useTasksStore()
     vi.mocked(tasksStore.findAllTasksNotRemoved).mockImplementation(
       async () => barkTasks,
     )
+
+    // mock useListProjectsStore 的 findProject 方法 直接 mock 返回的数据
+    const listProjectsStore = useListProjectsStore()
+    vi.mocked(listProjectsStore.findProject).mockImplementation(
+      () => barkListProject,
+    )
+
+    // 每次执行测试前，清空搜索结果
+    const { resetSearchTasks } = useSearchTasks()
+    resetSearchTasks()
+  })
+  it('should be search a task by title', async () => {
     const { searchTasks, filteredTasks } = useSearchTasks()
     await searchTasks('叫')
+    // 验证搜索结果
     expect(filteredTasks.value.length).toBe(2)
     expect(filteredTasks.value[0].item).toHaveProperty('id')
     expect(filteredTasks.value[0].item).toHaveProperty('title')
@@ -47,10 +59,73 @@ describe('searchTasks', () => {
     expect(filteredTasks.value[0].item).toHaveProperty('from')
     expect(filteredTasks.value[0].item.done).toBe(false)
     expect(filteredTasks.value[1].item.done).toBe(true)
-    // expect(filteredTasks.value[0].item.from).toBe(barkListProject)
-    // expect(filteredTasks.value[1].item.from).toEqual({
-    //   name: completeSmartProject.name,
-    //   type: completeSmartProject.type
-    // })
+    // 根据完成与否，验证 from 是否正确
+    expect(filteredTasks.value[0].item.from).toEqual({
+      id: '2',
+      name: 'bark',
+      type: TasksSelectorType.listProject,
+    })
+    expect(filteredTasks.value[1].item.from).toEqual({
+      name: SmartProjectName.Complete,
+      type: TasksSelectorType.smartProject,
+    })
+  })
+
+  it('should be search a task by desc', async () => {
+    const { searchTasks, filteredTasks } = useSearchTasks()
+    await searchTasks('蛙叫你')
+    expect(filteredTasks.value.length).toBe(2)
+    expect(filteredTasks.value[0].item.desc).toBe('蛙叫你')
+    expect(filteredTasks.value[1].item.desc).toBe('蛙再叫你')
+    expect(filteredTasks.value[0].item).toHaveProperty('id')
+    expect(filteredTasks.value[0].item).toHaveProperty('title')
+    expect(filteredTasks.value[0].item).toHaveProperty('desc')
+    expect(filteredTasks.value[0].item).toHaveProperty('done')
+    expect(filteredTasks.value[0].item).toHaveProperty('from')
+    expect(filteredTasks.value[0].item.done).toBe(false)
+    expect(filteredTasks.value[1].item.done).toBe(true)
+    // 根据完成与否，验证 from 是否正确
+    expect(filteredTasks.value[0].item.from).toEqual({
+      id: '2',
+      name: 'bark',
+      type: TasksSelectorType.listProject,
+    })
+    expect(filteredTasks.value[1].item.from).toEqual({
+      name: SmartProjectName.Complete,
+      type: TasksSelectorType.smartProject,
+    })
+  })
+
+  it('should not be found when the task does not exist', async () => {
+    const { searchTasks, filteredTasks } = useSearchTasks()
+    await searchTasks('不存在')
+    expect(filteredTasks.value.length).toBe(0)
+  })
+
+  it('should be task\'s project is listProject when status is active', async () => {
+    const { searchTasks, filteredTasks } = useSearchTasks()
+    await searchTasks('叫')
+    expect(filteredTasks.value[0].item.from).toEqual({
+      id: '2',
+      name: 'bark',
+      type: TasksSelectorType.listProject,
+    })
+  })
+
+  it('should be task\'s project is completeSmartProject when status is complete', async () => {
+    const { searchTasks, filteredTasks } = useSearchTasks()
+    await searchTasks('蛙')
+    expect(filteredTasks.value[1].item.from).toEqual({
+      name: SmartProjectName.Complete,
+      type: TasksSelectorType.smartProject,
+    })
+  })
+
+  it('should be reset search tasks', async () => {
+    const { searchTasks, filteredTasks, resetSearchTasks } = useSearchTasks()
+    await searchTasks('叫')
+    expect(filteredTasks.value.length).toBe(2)
+    resetSearchTasks()
+    expect(filteredTasks.value.length).toBe(0)
   })
 })
