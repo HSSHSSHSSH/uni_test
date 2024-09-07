@@ -28,6 +28,7 @@ function useLeftDrag(el: Ref<HTMLDivElement | undefined>) {
       moveRange: [x - 50, x + 150],
       onMove(moveDistance) {
         leftWidth.value += moveDistance
+        console.log('leftWiddth', leftWidth.value)
       },
     })
   })
@@ -72,6 +73,7 @@ const { rightWidthStyle } = useRightDrag(rightResizeElement)
     ref="boxContainerElement"
     class="!h-[calc(100vh-40px)] flex p-10px pt-0 overflow-hidden base-color"
   >
+    {{taskLeftMenuVisible}}
     <template v-if="taskLeftMenuVisible">
       <div :style="leftWidthStyle">
         <TaskLeftListView />
@@ -79,7 +81,7 @@ const { rightWidthStyle } = useRightDrag(rightResizeElement)
       <div
         ref="leftResizeElement"
         class="border-solid cursor-col-resize h-screen border-l-2px opacity-60 hover-opacity-100"
-        style="flex: 0 0 6px"
+        style="flex: 0 0 6px; background:red"
         title="收缩侧边栏"
       />
     </template>
