@@ -2,12 +2,12 @@
  * 测试搜索任务 searchTasks 与 resetSearchTasks 方法
  * 目标方法中使用了 tasksStore 与 listProjectsStore
  * 因此需要 mock 这两个 store
- * store 中使用了 pinia 
+ * store 中使用了 pinia
  * 因此需要使用 createTestingPinia 创建一个 pinia 实例
- * 
+ *
  * tasksStore 与 listProjectsStore 中设计到网络请求返回了数据
  * 因此需要 mock 网络请求返回的值
- * 
+ *
  * 测试点
  * 1. 可通过 title 搜索到任务
  * 2. 可通过 desc 搜索到任务
@@ -19,6 +19,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createTestingPinia } from '@pinia/testing'
+// import { createPinia, setActivePinia } from 'pinia'
 import { useSearchTasks } from '../searchTasks'
 import { TasksSelectorType, useListProjectsStore, useTasksStore } from '@/store'
 import { barkListProject, barkTasks } from '@/tests/fixture'
@@ -27,6 +28,11 @@ import { SmartProjectName } from '@/store/smartProjects'
 describe('searchTasks', () => {
   beforeEach(() => {
     // mock 一个 pinia 实例
+    /**
+     * 在 createTestingPinia 中调用了 setActivePinia 方法，若不使用 createTestingPinia 创建 pinia 实例，则需要手动调用 setActivePinia 方法
+     * 在生产环境时，一般都是在 app.use(pinia) 调用了 setActivePinia 方法，在单元测试中，没有 app，因此需要手动调用 setActivePinia 方法
+     * 参考下边的 beforeEach 方法
+     */
     createTestingPinia({
       createSpy: vi.fn,
     })
@@ -47,6 +53,22 @@ describe('searchTasks', () => {
     const { resetSearchTasks } = useSearchTasks()
     resetSearchTasks()
   })
+  // beforeEach(() => {
+  //   const pinia = createPinia()
+  //   setActivePinia(pinia)
+
+  //   // mock tasksStore 的 findAllTasksNotRemoved 方法 直接 mock 返回的数据
+  //   const tasksStore = useTasksStore()
+  //   vi.spyOn(tasksStore, 'findAllTasksNotRemoved').mockResolvedValue(barkTasks)
+
+  //   // mock useListProjectsStore 的 findProject 方法 直接 mock 返回的数据
+  //   const listProjectsStore = useListProjectsStore()
+  //   vi.spyOn(listProjectsStore, 'findProject').mockReturnValue(barkListProject)
+
+  //   // 每次执行测试前，清空搜索结果
+  //   const { resetSearchTasks } = useSearchTasks()
+  //   resetSearchTasks()
+  // })
   it('should be search a task by title', async () => {
     const { searchTasks, filteredTasks } = useSearchTasks()
     await searchTasks('叫')

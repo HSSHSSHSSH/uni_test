@@ -29,14 +29,12 @@ export function useSearchTasks() {
     const projectsStore = useListProjectsStore()
 
     const tasks = await tasksStore.findAllTasksNotRemoved() // 拿到了所有的数据
-    console.log('tasks', tasks)
     // Convert tasks to a format suitable for Fuse.js search
     const fuseTasks = tasks.map((task) => {
       // Determine if the task is done based on its status
       const done = task.status === TaskStatus.COMPLETED
       // Determine the source of the task based on its completion status
       const from = done ? completeSmartProject : projectsStore.findProject(task.projectId)
-      console.log('from', done, from)
       // Return a new object with the required properties for Fuse.js
       return {
         id: task.id!, // Ensure id is not undefined
@@ -46,7 +44,6 @@ export function useSearchTasks() {
         from, // Include the source of the task
       }
     })
-    console.log('fuseTasks', fuseTasks)
     fuse.setCollection(fuseTasks)
 
     filteredTasks.value = fuse.search(input)

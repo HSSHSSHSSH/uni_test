@@ -73,7 +73,7 @@ describe('search', () => {
 
     search.value = 'test'
 
-    await vi.advanceTimersToNextTimerAsync()
+    // await vi.advanceTimersToNextTimerAsync()
     await vi.runAllTimersAsync()
     expect(searchTasks).toBeCalledWith('test')
   })
@@ -83,7 +83,7 @@ describe('search', () => {
 
     search.value = '>test'
 
-    await vi.advanceTimersToNextTimerAsync()
+    // await vi.advanceTimersToNextTimerAsync()
     await vi.runAllTimersAsync()
     expect(searchCommands).toBeCalledWith('test')
   })
